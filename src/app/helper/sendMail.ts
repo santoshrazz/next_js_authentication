@@ -41,7 +41,7 @@ export const sendMail = async ({
   });
 
   const mailOption = {
-    from: "", // sender address
+    from: "santoshrajbgp11@gmail.com", // sender address
     to: email, // list of receivers
     subject: mailType === "VERIFY" ? "Verify Your Email" : "Forgot Password", // Subject line
     html: `<p>

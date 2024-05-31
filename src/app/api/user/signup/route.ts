@@ -1,16 +1,18 @@
 import { connectToDB } from "@/app/DbConfig/Connect";
-import User from "@/app/models/user.model";
 import { NextResponse, NextRequest } from "next/server";
 import bcrypt from "bcrypt";
 import { sendMail } from "@/app/helper/sendMail";
+import User from "@/app/models/user.model";
 
 connectToDB();
 
-async function Post(request: NextRequest) {
+export async function POST(request: NextRequest) {
   try {
     const requestBody = await request.json();
-    const { username, email, password } = requestBody;
+    const { userName, email, password } = requestBody;
+
     const isUserExist = await User.findOne({ email });
+    console.log(requestBody);
     // Check if user already exists
     if (isUserExist) {
       return NextResponse.json({
@@ -24,14 +26,22 @@ async function Post(request: NextRequest) {
     // Creating user after hasing password
     const newUser = await User.create({
       email,
-      username,
+      userName,
       password: hashedPassword,
     });
     console.log(newUser);
     sendMail({ email, mailType: "VERIFY", userId: newUser._id });
-    NextResponse.json({ status: true, message: "User created", newUser });
+    return NextResponse.json({
+      status: true,
+      message: "User created",
+      newUser,
+    });
   } catch (error: any) {
     console.log(`error at creating user`, error);
-    NextResponse.json({ success: false, message: "Error while creating user" });
+    return NextResponse.json({
+      success: false,
+      message: "Error while creating user",
+      error,
+    });
   }
 }
